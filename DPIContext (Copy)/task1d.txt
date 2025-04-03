@@ -1,0 +1,27 @@
+git log [<options>] [<revision-range>] [[--] <path>…​]
+
+
+Shows the commit logs.
+
+List commits that are reachable by following the parent links from the given commit(s), but exclude commits that are reachable from the one(s) given with a ^ in front of them. The output is given in reverse chronological order by default.
+
+
+
+Thus, the following command:
+
+$ git log foo bar ^baz
+
+means "list all the commits which are reachable from foo or bar, but not from baz".
+
+Therefore 
+$ git log 
+will list all the commits which are reachable from the directory you are in. Thus the commits from /Bob. 
+When we run git push bob Alice, Alice's branch is transferred but Bob's local head still points to Bob's own branch, not Alice's. Git log without arguments then only shows commits reachable from the current HEAD.
+
+Possible solutions:
+We could either merge Alice's branch into Bob's. With git merge Alice and then git log.
+
+Another solution would be to inspect all refs:
+git log --all --graph --oneline
+This will show all the commits made.
+

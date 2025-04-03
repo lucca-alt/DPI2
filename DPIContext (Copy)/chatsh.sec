@@ -1,0 +1,72 @@
+#!/bin/bash
+# Start script with: ./chat.sh <init, post, show, connect> <args>
+
+# Makes the script stop on errors
+set -e
+
+#######################################
+# Creates a git repo and a git user,
+# commits an inital message
+# Arguments:
+#   name of the user
+#######################################
+init() {
+  name=$1
+  # TODO: implement function
+  repoDir="$name"
+
+  mkdir "$repoDir"
+  cd "$repoDir"
+
+  git init -b "$name"
+
+  emptyTree=$(echo -n ""| git mktree)
+
+  commitMsg="$name joined"
+  commitHash=$(echo "$commitMsg" | git commit-tree "$emptyTree")
+
+  git update-ref refs/heads/"$name" "$commitHash"
+
+  git symbolic-ref HEAD refs/heads/"$name"
+}
+
+#######################################
+# Fetches from all remotes, commits an empty
+# tree with a user commit message and pushes to all remotes
+# Arguments:
+#   The message to be sent
+#######################################
+post() {
+  message=$1
+  # TODO: implement function
+}
+
+#######################################
+# Pushes local branch to the remote repositories
+#######################################
+#push() {
+  # TODO: implement function
+#}
+
+#######################################
+# Prints the git log history in a pretty format
+#######################################
+show() {
+  # TODO: implement function
+  # pass
+  : 
+}
+
+#######################################
+# Tracks the remote branch in the local repository
+# Arguments:
+#  The remote branch path
+#######################################
+connect() {
+  remote_repo=$1
+  # TODO: implement function
+}
+
+f_call=$1
+shift
+$f_call "$@"
