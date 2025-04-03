@@ -13,6 +13,21 @@ set -e
 init() {
   name=$1
   # TODO: implement function
+  repoDir="$name"
+
+  mkdir "$repoDir"
+  cd "$repoDir"
+
+  git init -b "$name"
+
+  emptyTree=$(echo -n ""| git mktree)
+
+  commitMsg="$name joined"
+  commitHash=$(echo "$commitMsg" | git commit-tree "$emptyTree")
+
+  git update-ref refs/heads/"$name" "$commitHash"
+
+  git symbolic-ref HEAD refs/heads/"$name"
 }
 
 #######################################
@@ -29,16 +44,17 @@ post() {
 #######################################
 # Pushes local branch to the remote repositories
 #######################################
-push() {
+#push() {
   # TODO: implement function
-}
+#}
 
 #######################################
 # Prints the git log history in a pretty format
 #######################################
 show() {
   # TODO: implement function
-  pass
+  # pass
+  : 
 }
 
 #######################################
@@ -49,7 +65,22 @@ show() {
 connect() {
   remote_repo=$1
   # TODO: implement function
-}
+
+  if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    for dir in */; do
+      if [ -d "$dir/.git" ]; then
+        cd "$dir"
+        break
+      fi
+    done
+  fi 
+	 
+
+  remoteName=$(basename "$remote_repo")
+
+  git remote add "$remoteName" "$remote_repo"
+  
+ }
 
 f_call=$1
 shift
