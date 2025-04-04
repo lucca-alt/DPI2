@@ -39,15 +39,61 @@ init() {
 post() {
   message=$1
   # TODO: implement function
+  if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+	  for dir in */; do
+		  if [ -d "$dir/.git" ]; then
+			  cd "$dir"
+			  break
+		  fi
+	  done
+  fi
+
+
+  git fetch --all
+
+  branch=$(git symbolic-ref --short HEAD)
+
+  parents=$(git for-each-ref --format='%(refname:short)' refs/remotes/ | while read ref; do
+  git rev-parse "$ref"
+done)
+
+  current_head=$(git rev-parse HEAD)
+  parents="$parents $current_head"
+
+  empty_tree=$(echo -n "" | git mktree)
+
+  parent_args=""
+  for parent in $parents; do
+	  parent_args="$parent_args -p $parent"
+  done
+
+  new_commit=$(echo "$message" | git commit-tree $empty_tree $parent_args)
+
+  git update-ref "refs/heads/$branch" "$new_commit"
 }
 
 #######################################
 # Pushes local branch to the remote repositories
 #######################################
-#push() {
+push() {
   # TODO: implement function
-#}
+  if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    for dir in */; do
+      if [ -d "$dir/.git" ]; then
+        cd "$dir"
+        break
+      fi
+    done
+  fi
 
+  
+  branch=$(git symbolic-ref --short HEAD)
+
+  # Loop over all remotes and push current branch
+  for remote in $(git remote); do
+    git push "$remote" "$branch"
+  done
+}
 #######################################
 # Prints the git log history in a pretty format
 #######################################
@@ -65,22 +111,25 @@ show() {
 connect() {
   remote_repo=$1
   # TODO: implement function
-
+ 
   if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
     for dir in */; do
-      if [ -d "$dir/.git" ]; then
+      if [ -d "$dir/.git" ] && [ "$dir" != "$(basename "$remote_repo")/" ]; then
         cd "$dir"
         break
       fi
     done
-  fi 
-	 
+  fi
 
-  remoteName=$(basename "$remote_repo")
-
-  git remote add "$remoteName" "$remote_repo"
   
- }
+  if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    echo "No Git repository found to add remote to."
+    exit 1
+  fi
+
+  remote_name=$(basename "$remote_repo")
+  git remote add "$remote_name" "$remote_repo"
+}
 
 f_call=$1
 shift
