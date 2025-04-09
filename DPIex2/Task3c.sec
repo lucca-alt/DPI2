@@ -1,0 +1,57 @@
+#!/bin/bash
+#######################################
+# Delete the previous repos 
+#######################################
+rm -rf Alice Bob
+
+#######################################
+# Initialize repos
+#######################################
+
+./chatsh.sec init Alice
+./chatsh.sec init Bob
+#######################################
+# Connect repos to each other
+#######################################
+cd Alice
+../chatsh.sec connect ../Bob
+cd ../Bob
+../chatsh.sec connect ../Alice
+
+#######################################
+# Messages
+#######################################
+../chatsh.sec post "Hey Alice!"
+../chatsh.sec push
+
+cd ../Alice
+
+# Set time to 5 hours before
+
+timedatectl set-ntp false
+timedatectl set-time "$(date -d "-5 hours" +"%Y-%m-%d %H:%M:%S")"
+../chatsh.sec post "Hey everyone"
+../chatsh.sec push
+
+timedatectl set-ntp true # Turns time back to normal
+sleep 10 # It takes a few seconds to sync the time
+
+cd ../Bob
+../chatsh.sec post "How are you?"
+../chatsh.sec push
+
+cd ../Alice
+../chatsh.sec post "I'm good, thanks for asking."
+../chatsh.sec post "Are you a student?"
+../chatsh.sec push
+
+#######################################
+# Show conversation from both views
+#######################################
+echo " Alice's view"
+../chatsh.sec show
+
+cd ../Bob
+echo "Bob's view"
+../chatsh.sec show
+
