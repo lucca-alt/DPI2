@@ -34,7 +34,7 @@ timedatectl set-time "$(date -d "-5 hours" +"%Y-%m-%d %H:%M:%S")"
 ../chatsh.sec push
 
 timedatectl set-ntp true # Turns time back to normal
-sleep 10 # It takes a few seconds to sync the time
+sleep 10 # waits to sync the time
 
 cd ../Bob
 ../chatsh.sec post "How are you?"

@@ -86,7 +86,7 @@ push() {
   branch=$(git symbolic-ref --short HEAD)
 
   # Loop over all remotes and push current branch
-  for remote in $(git remote); do
+  for remote in $(git remote); do 
     git push "$remote" "$branch"
   done
 }
@@ -108,7 +108,7 @@ show() {
     done
   fi
   
-  # Use git log to fetch all commits in reverse order with a custom format
+
   #git log --reverse --pretty=format:"%an <%ad>: %s" --date=format:"%I:%M %p"
   LC_TIME=en_US.UTF-8 git log --all --topo-order --pretty=format:'%Cred%an%Creset (%ad): %s' --date=format:'%H:%M %p'
   
